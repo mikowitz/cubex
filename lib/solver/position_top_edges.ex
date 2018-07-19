@@ -6,7 +6,7 @@ defmodule Solver.PositionTopEdges do
   def solve({@solved, _} = set), do: set
   def solve({cube, moves} = set) do
     case count_aligned_edges?(cube) do
-      4 -> make_moves(set, "u")
+      4 -> make_moves(set, "u") |> solve
       1 -> rotate_three(set) |> solve
       0 -> rotate_four(set) |> solve
     end
