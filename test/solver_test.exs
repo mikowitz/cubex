@@ -6,11 +6,11 @@ defmodule Cube.SolverTest do
   test "sc" do
     cube = Cube2.new()
 
-    assert {cube, []} == Solver.sc({cube, []})
+    assert {cube, []} == Solver.solve_cross({cube, []})
 
     cube = cube |> Cube2.f2
 
-    {_, moves} = Solver.sc({cube, []})
+    {_, moves} = Solver.solve_cross({cube, []})
     assert ["f2"] == moves
   end
 end
