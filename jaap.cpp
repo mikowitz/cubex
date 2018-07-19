@@ -1,3 +1,4 @@
+// http://tomas.rokicki.com/cubecontest/jaap.txt
 /*
   Jaap Scherphuis,  24/01/2004,  jaapsch_at_yahoo_do_com
 

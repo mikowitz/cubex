@@ -1,3 +1,4 @@
+# partial ruby translation of // http://tomas.rokicki.com/cubecontest/jaap.txt
 # i = 0
 # j = 0
 # k = 0

@@ -1,3 +1,4 @@
+// https://codegolf.stackexchange.com/a/10944
 #include<iostream>
 #include<vector>
 #define G(i,x,y)for(int i=x;i^y;i++)

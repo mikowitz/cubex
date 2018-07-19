@@ -1,3 +1,5 @@
+# https://codegolf.stackexchange.com/a/10945
+
 r=->y{y.split.map{|x|[*x.chars]}}
 
 G=r['UF UR UB UL DF DR DB DL FR FL BR BL UFR URB UBL ULF DRF DFL DLB DBR']

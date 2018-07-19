@@ -1,3 +1,4 @@
+# https://codegolf.stackexchange.com/a/10946
 T=[]
 S=[0]*20,'QTRXadbhEIFJUVZYeijf',0
 I='FBRLUD'
