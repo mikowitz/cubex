@@ -1,6 +1,8 @@
 defmodule Solver.TopCorners do
   @sides ~w(f r b l)
 
+  import Cube.Helpers
+
   def solve({cube, _} = set) do
     case oriented_corner_count(cube) do
       0 -> flip_all_corners(set)
@@ -43,18 +45,5 @@ defmodule Solver.TopCorners do
 
   def oriented_corner_count(cube) do
     cube |> top_face_indices |> Enum.count(fn x -> x == 0 end)
-  end
-
-  defp make_moves({cube, moves}, new_moves) do
-    {
-      Cube2.turn(cube, new_moves),
-      moves ++ [new_moves]
-    }
-  end
-
-  def face_names(front) do
-    @sides |> Stream.cycle
-    |> Stream.drop(Enum.find_index(@sides, &Kernel.==(&1,front)))
-    |> Enum.take(4)
   end
 end

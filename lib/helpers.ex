@@ -8,7 +8,7 @@ defmodule Cube.Helpers do
   end
   def rotate([h|t], n), do: rotate(t ++ [h], n - 1)
 
-  def make_moves({cube, moves}, new_moves, face) do
+  def make_moves({cube, moves}, new_moves, face \\ "f") do
     new_moves = create_step(new_moves, face)
     {Cube2.turn(cube, new_moves), moves ++ [new_moves]}
   end

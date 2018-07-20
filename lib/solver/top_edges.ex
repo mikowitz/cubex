@@ -1,5 +1,5 @@
 defmodule Solver.TopEdges do
-  @sides ~w(f r b l)
+  import Cube.Helpers
 
   def solve({cube, _} = set) do
     case oriented_edge_count(cube) do
@@ -25,13 +25,11 @@ defmodule Solver.TopEdges do
   end
 
   def rotate_adjacent_edges(set, face) do
-    [f, r, b, l] = face_names(face)
-    make_moves(set, "#{f} u #{r} u' #{r}' #{f}'")
+    make_moves(set, "f u r u' r' f'", face)
   end
 
   def rotate_opposite_edges(set, face) do
-    [f, r, b, l] = face_names(face)
-    make_moves(set, "#{f} #{r} u #{r}' u' #{f}'")
+    make_moves(set, "f r u r' u' f'", face)
   end
 
   def oriented_edge_count(cube) do
@@ -41,18 +39,5 @@ defmodule Solver.TopEdges do
   def unrotated_edge_indices(cube) do
     Enum.slice(cube, 0, 4) |> Enum.with_index |> Enum.reject(fn {f, _} -> String.starts_with?(f, "U") end)
     |> Enum.map(fn {_, i} -> i end)
-  end
-
-  defp make_moves({cube, moves}, new_moves) do
-    {
-      Cube2.turn(cube, new_moves),
-      moves ++ [new_moves]
-    }
-  end
-
-  def face_names(front) do
-    @sides |> Stream.cycle
-    |> Stream.drop(Enum.find_index(@sides, &Kernel.==(&1,front)))
-    |> Enum.take(4)
   end
 end

@@ -3,8 +3,10 @@ defmodule Solver.PositionTopEdges do
 
   @solved ~w(UF UR UB UL DF DR DB DL FR FL BR BL UFR URB UBL ULF DRF DFL DLB DBR)
 
+  import Cube.Helpers
+
   def solve({@solved, _} = set), do: set
-  def solve({cube, moves} = set) do
+  def solve({cube, _} = set) do
     case count_aligned_edges?(cube) do
       4 -> make_moves(set, "u") |> solve
       1 -> rotate_three(set) |> solve
@@ -15,8 +17,8 @@ defmodule Solver.PositionTopEdges do
   def rotate_three({cube, _} = set) do
     [good_face_index, _] = find_aligned_edge(cube)
     front_index = rem(good_face_index + 2, 4)
-    [f, r, b, l] = face_names(Enum.at(@sides, front_index))
-    make_moves(set, "#{r} u' #{r} u #{r} u #{r} u' #{r}' u' #{r}2")
+    face = Enum.at(@sides, front_index)
+    make_moves(set, "r u' r u r u r u' r' u' r2", face)
   end
 
   def rotate_four({cube, _} = set) do
@@ -55,18 +57,5 @@ defmodule Solver.PositionTopEdges do
       c = Enum.at(cube, ci)
       String.at(e, 1) == String.at(c, 1)
     end)
-  end
-
-  defp make_moves({cube, moves}, new_moves) do
-    {
-      Cube2.turn(cube, new_moves),
-      moves ++ [new_moves]
-    }
-  end
-
-  def face_names(front) do
-    @sides |> Stream.cycle
-    |> Stream.drop(Enum.find_index(@sides, &Kernel.==(&1,front)))
-    |> Enum.take(4)
   end
 end

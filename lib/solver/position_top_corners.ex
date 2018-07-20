@@ -1,10 +1,10 @@
 defmodule Solver.PositionTopCorners do
-  @sides ~w(f r b l)
-
   @fr "UFR"
   @rb "URB"
   @bl "UBL"
   @lf "ULF"
+
+  import Cube.Helpers
 
   def solve({[_,_,_,_,"DF","DR","DB","DL",
               "FR","FL","BR","BL",
@@ -56,14 +56,12 @@ defmodule Solver.PositionTopCorners do
       String.at(rb, 1) == String.at(bl, 2)
   end
 
-  def parallel_swap({cube, _} = set, face) do
-    [f, r, b, l] = face_names(face)
-    make_moves(set, "#{r} #{b}' #{r}' #{f} #{r} #{b} #{r}' #{f}' #{r} #{b} #{r}' #{f} #{r} #{b}' #{r}' #{f}'")
+  def parallel_swap(set, face) do
+    make_moves(set, "r b' r' f r b r' f' r b r' f r b' r' f'", face)
   end
 
   def rotate_three(set, face) do
-    [f, r, b, l] = face_names(face)
-    make_moves(set, "#{r} #{b}' #{r} #{f}2 #{r}' #{b} #{r} #{f}2 #{r}2")
+    make_moves(set, "r b' r f2 r' b r f2 r2", face)
   end
 
   def corners_off_alignment?(cube) do
@@ -89,18 +87,5 @@ defmodule Solver.PositionTopCorners do
 
   def corners(cube) do
     Enum.slice(cube, 12, 4)
-  end
-
-  defp make_moves({cube, moves}, new_moves) do
-    {
-      Cube2.turn(cube, new_moves),
-      moves ++ [new_moves]
-    }
-  end
-
-  def face_names(front) do
-    @sides |> Stream.cycle
-    |> Stream.drop(Enum.find_index(@sides, &Kernel.==(&1,front)))
-    |> Enum.take(4)
   end
 end
