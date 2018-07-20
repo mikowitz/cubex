@@ -3,21 +3,18 @@ defmodule Solver.LowerLayers do
   # ~w(UF UR UB UL DF DR DB DL FR FL BR BL UFR URB UBL ULF DRF DFL DLB DBR)
 
   @solved ~w(UF UR UB UL DF DR DB DL FR FL BR BL UFR URB UBL ULF DRF DFL DLB DBR)
-  @sides ~w(f r b l)
-  @drf "DRF"
-  @dfl "DFL"
-  @dlb "DLB"
-  @dbr "DBR"
+
+  import Cube.Helpers
 
   def solve({[_,_,_,_,"DF","DR","DB","DL","FR","FL","BR","BL",_,_,_,_,"DRF","DFL","DLB","DBR"],_}=set), do: set
 
   # check middle layers
   def solve({cube, _} = set) do
     cond do
-      cubies_placed?(cube, [8, 16]) -> rotate(set, "f") |> solve
-      cubies_placed?(cube, [9, 17]) -> rotate(set, "l") |> solve
-      cubies_placed?(cube, [10, 19]) -> rotate(set, "r") |> solve
-      cubies_placed?(cube, [11, 18]) -> rotate(set, "b") |> solve
+      cubies_placed?(cube, [8, 16]) -> rotate_edge_and_corner(set, "f") |> solve
+      cubies_placed?(cube, [9, 17]) -> rotate_edge_and_corner(set, "l") |> solve
+      cubies_placed?(cube, [10, 19]) -> rotate_edge_and_corner(set, "r") |> solve
+      cubies_placed?(cube, [11, 18]) -> rotate_edge_and_corner(set, "b") |> solve
       no_edge_cubies_in_top_layer?(cube) -> pop_cubie(set) |> solve
 
       cubie_in_adjacent_top_edges?(cube, "FR", [0]) -> insert_cwise(set, "f") |> solve
@@ -31,115 +28,74 @@ defmodule Solver.LowerLayers do
 
       cubie_in_adjacent_top_edges?(cube, "LF", [3]) -> insert_cwise(set, "l") |> solve
       cubie_in_adjacent_top_edges?(cube, "LF", [0]) -> insert_ccwise(set, "l") |> solve
-      true -> make_moves(set, "u") |> solve
+      true -> make_moves(set, "u", "f") |> solve
     end
   end
 
-  def cwise_set(set, face) do
-    [f, r, b, l] = face_names(face)
-    make_moves(set, "u #{r} u' #{r}' u' #{f}' u #{f}")
-  end
-
-  def cwise_cwise(set, face) do
-    [f, r, b, l] = face_names(face)
-    make_moves(set, "#{f}' u #{f} u' #{f}' u #{f}")
-  end
-
-  def cwise_ccwise(set, face) do
-    [f, r, b, l] = face_names(face)
-    make_moves(set, "#{f}' u' #{f} u #{f}' u' #{f}")
-  end
-
-  def ccwise_set(set, face) do
-    [f, r, b, l] = face_names(face)
-    make_moves(set, "u' #{f}' u #{f} u #{r} u' #{r}'")
-  end
-
-  def ccwise_cwise(set, face) do
-    [f, r, b, l] = face_names(face)
-    make_moves(set, "#{r} u #{r}' u' #{r} u #{r}'")
-  end
-
-  def ccwise_ccwise(set, face) do
-    [f, r, b, l] = face_names(face)
-    make_moves(set, "#{r} u' #{r}' u #{r} u' #{r}'")
-  end
-
   def insert_cwise({[edge,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,corner|_], _} = set, "f") do
-    # IO.puts "insert cwise f"
     case [edge, corner] do
       ["RF", "DRF"] -> cwise_set(set, "f")
       ["RF", "FDR"] -> cwise_cwise(set, "f")
       ["RF", "RFD"] -> cwise_ccwise(set, "f")
-      ["FR", _] -> make_moves(set, "u'") |> solve
+      ["FR", _] -> make_moves(set, "u'", "f") |> solve
     end
   end
-
-  def insert_ccwise({[_,edge,_,_,_,_,_,_,_,_,_,_,_,_,_,_,corner|_], _} = set, "f") do
-    # IO.puts "insert ccwise f"
-    case [edge, corner] do
-      ["FR", "DRF"] -> ccwise_set(set, "f")
-      ["FR", "FDR"] -> ccwise_cwise(set, "f")
-      ["FR", "RFD"] -> ccwise_ccwise(set, "f")
-      ["RF", _] -> make_moves(set, "u") |> solve
-    end
-  end
-
   def insert_cwise({[_,edge,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,corner], _} = set, "r") do
-    # IO.puts "insert cwise r"
     case [edge, corner] do
       ["BR", "DBR"] -> cwise_set(set, "r")
       ["BR", "RDB"] -> cwise_cwise(set, "r")
       ["BR", "BRD"] -> cwise_ccwise(set, "r")
-      ["RB", _] -> make_moves(set, "u'") |> solve
+      ["RB", _] -> make_moves(set, "u'", "f") |> solve
     end
   end
-
-  def insert_ccwise({[_,_,edge,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,corner], _} = set, "r") do
-    # IO.puts "insert ccwise r"
-    case [edge, corner] do
-      ["RB", "DBR"] -> ccwise_set(set, "r")
-      ["RB", "RDB"] -> ccwise_cwise(set, "r")
-      ["RB", "BRD"] -> ccwise_ccwise(set, "r")
-      ["BR", _] -> make_moves(set, "u") |> solve
-    end
-  end
-
   def insert_cwise({[_,_,edge,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,corner|_], _} = set, "b") do
-    # IO.puts "insert cwise b"
     case [edge, corner] do
       ["LB", "DLB"] -> cwise_set(set, "b")
       ["LB", "BDL"] -> cwise_cwise(set, "b")
       ["LB", "LBD"] -> cwise_ccwise(set, "b")
-      ["BL", _] -> make_moves(set, "u'") |> solve
+      ["BL", _] -> make_moves(set, "u'", "f") |> solve
     end
   end
-  def insert_ccwise({[_,_,_,edge,_,_,_,_,_,_,_,_,_,_,_,_,_,_,corner|_], _} = set, "b") do
-    # IO.puts "insert ccwise b"
-    case [edge, corner] do
-      ["BL", "DLB"] -> ccwise_set(set, "b")
-      ["BL", "BDL"] -> ccwise_cwise(set, "b")
-      ["BL", "LBD"] -> ccwise_ccwise(set, "b")
-      ["LB", _] -> make_moves(set, "u") |> solve
-    end
-  end
-
   def insert_cwise({[_,_,_,edge,_,_,_,_,_,_,_,_,_,_,_,_,_,corner|_], _} = set, "l") do
-    # IO.puts "insert cwise l"
     case [edge, corner] do
       ["FL", "DFL"] -> cwise_set(set, "l")
       ["FL", "LDF"] -> cwise_cwise(set, "l")
       ["FL", "FLD"] -> cwise_ccwise(set, "l")
-      ["LF", _] -> make_moves(set, "u'") |> solve
+      ["LF", _] -> make_moves(set, "u'", "f") |> solve
     end
   end
+
+  def insert_ccwise({[_,edge,_,_,_,_,_,_,_,_,_,_,_,_,_,_,corner|_], _} = set, "f") do
+    case [edge, corner] do
+      ["FR", "DRF"] -> ccwise_set(set, "f")
+      ["FR", "FDR"] -> ccwise_cwise(set, "f")
+      ["FR", "RFD"] -> ccwise_ccwise(set, "f")
+      ["RF", _] -> make_moves(set, "u", "f") |> solve
+    end
+  end
+  def insert_ccwise({[_,_,edge,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,corner], _} = set, "r") do
+    case [edge, corner] do
+      ["RB", "DBR"] -> ccwise_set(set, "r")
+      ["RB", "RDB"] -> ccwise_cwise(set, "r")
+      ["RB", "BRD"] -> ccwise_ccwise(set, "r")
+      ["BR", _] -> make_moves(set, "u", "f") |> solve
+    end
+  end
+  def insert_ccwise({[_,_,_,edge,_,_,_,_,_,_,_,_,_,_,_,_,_,_,corner|_], _} = set, "b") do
+    case [edge, corner] do
+      ["BL", "DLB"] -> ccwise_set(set, "b")
+      ["BL", "BDL"] -> ccwise_cwise(set, "b")
+      ["BL", "LBD"] -> ccwise_ccwise(set, "b")
+      ["LB", _] -> make_moves(set, "u", "f") |> solve
+    end
+  end
+
   def insert_ccwise({[edge,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,corner|_], _} = set, "l") do
-    # IO.puts "insert ccwise l"
     case [edge, corner] do
       ["LF", "DFL"] -> ccwise_set(set, "l")
       ["LF", "LDF"] -> ccwise_cwise(set, "l")
       ["LF", "FLD"] -> ccwise_ccwise(set, "l")
-      ["FL", _] -> make_moves(set, "u") |> solve
+      ["FL", _] -> make_moves(set, "u", "f") |> solve
     end
   end
 
@@ -161,7 +117,6 @@ defmodule Solver.LowerLayers do
   end
 
   def pop_cubie({cube, _} = set) do
-    # IO.puts "pop cubie"
     cond do
       !cubie_correct?(cube, 8) -> _pop_cubie(set, "f")
       !cubie_correct?(cube, 9) -> _pop_cubie(set, "l")
@@ -176,13 +131,10 @@ defmodule Solver.LowerLayers do
   end
 
   def _pop_cubie(set, face) do
-    [f, r, b, l] = face_names(face)
-    # IO.puts "   popping cubie on #{f}"
-    make_moves(set, "u #{r} u' #{r}' u' #{f}' u #{f}")
+    make_moves(set, "u r u' r' u' f' u f", face)
   end
 
-  def rotate({[_,_,_,_,_,_,_,_,edge,_,_,_,_,_,_,_,corner|_], _} = set, "f") do
-    # IO.puts "rotate f"
+  def rotate_edge_and_corner({[_,_,_,_,_,_,_,_,edge,_,_,_,_,_,_,_,corner|_], _} = set, "f") do
     case [edge, corner] do
       ["FR", "FDR"] -> cwise(set, "f")
       ["FR", "RFD"] -> ccwise(set, "f")
@@ -192,8 +144,7 @@ defmodule Solver.LowerLayers do
     end
   end
 
-  def rotate({[_,_,_,_,_,_,_,_,_,edge,_,_,_,_,_,_,_,corner|_], _} = set, "l") do
-    # IO.puts "rotate l"
+  def rotate_edge_and_corner({[_,_,_,_,_,_,_,_,_,edge,_,_,_,_,_,_,_,corner|_], _} = set, "l") do
     case [edge, corner] do
       ["FL", "LDF"] -> cwise(set, "l")
       ["FL", "FLD"] -> ccwise(set, "l")
@@ -203,8 +154,7 @@ defmodule Solver.LowerLayers do
     end
   end
 
-  def rotate({[_,_,_,_,_,_,_,_,_,_,edge,_,_,_,_,_,_,_,_,corner], _} = set, "r") do
-    # IO.puts "rotate r"
+  def rotate_edge_and_corner({[_,_,_,_,_,_,_,_,_,_,edge,_,_,_,_,_,_,_,_,corner], _} = set, "r") do
     case [edge, corner] do
       ["BR", "RDB"] -> cwise(set, "r")
       ["BR", "BRD"] -> ccwise(set, "r")
@@ -214,8 +164,7 @@ defmodule Solver.LowerLayers do
     end
   end
 
-  def rotate({[_,_,_,_,_,_,_,_,_,_,_,edge,_,_,_,_,_,_,corner|_], _} = set, "b") do
-    # IO.puts "rotate b"
+  def rotate_edge_and_corner({[_,_,_,_,_,_,_,_,_,_,_,edge,_,_,_,_,_,_,corner|_], _} = set, "b") do
     case [edge, corner] do
       ["BL", "BDL"] -> cwise(set, "b")
       ["BL", "LBD"] -> ccwise(set, "b")
@@ -225,80 +174,35 @@ defmodule Solver.LowerLayers do
     end
   end
 
-  def cwise(set, face) do
-    [f, r, b, l] = face_names(face)
-    make_moves(set, "#{r} u' #{r}' u #{r} u2 #{r}' u #{r} u' #{r}'")
-  end
+  def cwise(set, face), do: make_moves(set, "r u' r' u r u2 r' u r u' r'", face)
+  def ccwise(set, face), do: make_moves(set, "r u' r' u' r u r' u' r u2 r'", face)
 
-  def ccwise(set, face) do
-    [f, r, b, l] = face_names(face)
-    make_moves(set, "#{r} u' #{r}' u' #{r} u #{r}' u' #{r} u2 #{r}'")
-  end
+  def flip(set, face), do: make_moves(set, "r u' r' u f' u2 f u f' u2 f", face)
+  def flip_cwise(set, face), do: make_moves(set, "r u r' u' r u' r' u2 f' u' f", face)
+  def flip_ccwise(set, face), do: make_moves(set, "r u' r' u f' u' f u' f' u' f", face)
 
-  def flip(set, face) do
-    [f, r, b, l] = face_names(face)
-    make_moves(set, "#{r} u' #{r}' u #{f}' u2 #{f} u #{f}' u2 #{f}")
-  end
+  def place_right(set, face), do: make_moves(set, "u r u' r' u' f' u f", face)
+  def place_right_c(set, face), do: make_moves(set, "r u r' u2 f' u f", face)
+  def place_right_cc(set, face), do: make_moves(set, "f' u' f u f' u' f", face)
 
-  def flip_cwise(set, face) do
-    [f, r, b, l] = face_names(face)
-    make_moves(set, "#{r} u #{r}' u' #{r} u' #{r}' u2 #{f}' u' #{f}")
-  end
+  def place_left(set, face), do: make_moves(set, "u' l' u l u f u' f'", face)
+  def flip_right_c(set, face), do: make_moves(set, "u' r u r' u' r u r'", face)
+  def flip_right_cc(set, face), do: make_moves(set, "u' r u' r' u r u' r'", face)
 
-  def flip_ccwise(set, face) do
-    [f, r, b, l] = face_names(face)
-    make_moves(set, "#{r} u' #{r}' u #{f}' u' #{f} u' #{f}' u' #{f}")
-  end
-
-  def place_right(set, face) do
-    [f, r, b, l] = face_names(face)
-    make_moves(set, "u #{r} u' #{r}' u' #{f}' u #{f}")
-  end
-  def place_right_cc(set, face) do
-    [f, r, b, l] = face_names(face)
-    make_moves(set, "#{f}' u' #{f} u #{f}' u' #{f}")
-  end
-  def place_right_c(set, face) do
-    [f, r, b, l] = face_names(face)
-    make_moves(set, "#{r} u #{r}' u2 #{f}' u #{f}")
-  end
-
-  def flip_right_c(set, face) do
-    [f, r, b, l] = face_names(face)
-    make_moves(set, "u' #{r} u #{r}' u' #{r} u #{r}'")
-  end
-  def flip_right_cc(set, face) do
-    [f, r, b, l] = face_names(face)
-    make_moves(set, "u' #{r} u' #{r}' u #{r} u' #{r}'")
-  end
   def flip_right(set, face) do
-    [f, r, b, l] = face_names(face)
-    make_moves(set, "u'") |> place_left(r)
-  end
-
-  def place_left(set, face) do
-    [f, r, b, l] = face_names(face)
-    make_moves(set, "u' #{l}' u #{l} u #{f} u' #{f}'")
+    [_, r, _, _] = face_names(face)
+    make_moves(set, "u'", face) |> place_left(r)
   end
   def flip_left(set, face) do
-    [f, r, b, l] = face_names(face)
-    make_moves(set, "u") |> place_right(l)
+    [_, _, _, l] = face_names(face)
+    make_moves(set, "u", face) |> place_right(l)
   end
 
-  def sort_cubie(cubie) do
-    cubie |> String.split("") |> Enum.sort |> Enum.join
-  end
+  def cwise_set(set, face), do: make_moves(set, "u r u' r' u' f' u f", face)
+  def cwise_cwise(set, face), do: make_moves(set, "f' u f u' f' u f", face)
+  def cwise_ccwise(set, face), do: make_moves(set, "f' u' f u f' u' f", face)
 
-  defp make_moves({cube, moves}, new_moves) do
-    {
-      Cube2.turn(cube, new_moves),
-      moves ++ [new_moves]
-    }
-  end
-
-  def face_names(front) do
-    @sides |> Stream.cycle
-    |> Stream.drop(Enum.find_index(@sides, &Kernel.==(&1,front)))
-    |> Enum.take(4)
-  end
+  def ccwise_set(set, face), do: make_moves(set, "u' f' u f u r u' r'", face)
+  def ccwise_cwise(set, face), do: make_moves(set, "r u r' u' r u r'", face)
+  def ccwise_ccwise(set, face), do: make_moves(set, "r u' r' u r u' r'", face)
 end
