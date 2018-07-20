@@ -29,4 +29,8 @@ defmodule Cube.Helpers do
       end
     end) |> Enum.join(" ")
   end
+
+  def sort_cubie(cubie) do
+    cubie |> String.split("") |> Enum.sort |> Enum.join
+  end
 end

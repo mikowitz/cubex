@@ -2,27 +2,25 @@ defmodule Cube.Solver do
   #            0  1  2  3  4  5  6  7  8  9  10 11 12  13  14  15  16  17  18  19
   # @solved ~w(UF UR UB UL DF DR DB DL FR FL BR BL UFR URB UBL ULF DRF DFL DLB DBR)
 
-  @sides ~w(f r b l)
-
   def initialize(cube) do
     cube
   end
 
   def solve(cube) do
     {cube, []}
-    |> message("=== Solve Cross ===")
+    # |> message("=== Solve Cross ===")
     |> solve_cross
-    |> message("=== Place Corners ===")
+    # |> message("=== Place Corners ===")
     |> place_corners
-    |> message("=== Solve Lower Layers")
+    # |> message("=== Solve Lower Layers")
     |> solve_lower_layers
-    |> message("=== Rotate Top Corners ===")
+    # |> message("=== Rotate Top Corners ===")
     |> rotate_top_edges
-    |> message("=== Rotate Top Corners ===")
+    # |> message("=== Rotate Top Corners ===")
     |> rotate_top_corners
-    |> message("=== Position Top Corners ===")
+    # |> message("=== Position Top Corners ===")
     |> position_top_corners
-    |> message("=== Position Top Edges ===")
+    # |> message("=== Position Top Edges ===")
     |> position_top_edges
   end
 
@@ -52,15 +50,15 @@ defmodule Cube.Solver do
 
 
   def test do
-    test_cube |> solve
+    test_cube() |> solve
   end
   def test(turns) do
     Cube2.turn(Cube2.new, turns) |> solve
   end
 
   def random_test do
-    steps = scramble_steps
-    IO.inspect steps
+    steps = scramble_steps()
+    # IO.inspect steps
     File.write("random.txt", steps <> "\n", [:append])
     Cube2.new |> Cube2.turn(steps) |> solve
   end
@@ -71,7 +69,7 @@ defmodule Cube.Solver do
 
   def all_turns, do: @turns
 
-  def random_turn, do: Enum.random(all_turns)
+  def random_turn, do: Enum.random(all_turns())
 
   def scramble_steps do
     Stream.repeatedly(&random_turn/0) |> Enum.take(15) |> Enum.join(" ")
