@@ -1,7 +1,4 @@
 defmodule Solver.Cross do
-  @side_names ~w(front right back left)
-  @sides Enum.map(@side_names, &String.first/1)
-
   import Cube.Helpers
 
   def solve({[_, _, _, _, "DF", "DR", "DB", "DL"|_], _} = set), do: set
@@ -58,63 +55,117 @@ defmodule Solver.Cross do
     lookup_table()[cubie] |> Enum.at(index)
   end
 
-  defp lookup_table do
-    Enum.map(@sides, fn face ->
-      uppercase_face = String.upcase(face)
-      [
-        {"D#{uppercase_face}", build_turn_map(:rotation, face)},
-        {"#{uppercase_face}D", build_turn_map(:flip, face)}
+  def lookup_table do
+    %{
+      "DF" => [
+        {:rotate_down, "f"},
+        {:rotate_down_left, "r"},
+        {:rotate_down_across, "b"},
+        {:rotate_down_right, "l"},
+        nil,
+        {:rotate_left, "r"},
+        {:rotate_across, "b"},
+        {:rotate_right, "l"},
+        {:middle_front_to_front, "f"},
+        {:middle_right_to_right, "l"},
+        {:middle_right_to_left, "r"},
+        {:middle_front_to_back, "b"}
+      ],
+      "FD" => [
+        {:flip_down, "f"},
+        {:flip_down_left, "r"},
+        {:flip_down_across, "b"},
+        {:flip_down_right, "l"},
+        {:flip, "f"},
+        {:flip_left, "r"},
+        {:flip_across, "b"},
+        {:flip_right, "l"},
+        {:middle_right_to_front, "f"},
+        {:middle_front_to_right, "l"},
+        {:middle_front_to_left, "r"},
+        {:middle_right_to_back, "b"}
+      ],
+      "DR" => [
+        {:rotate_down_right, "f"},
+        {:rotate_down, "r"},
+        {:rotate_down_left, "b"},
+        {:rotate_down_across, "l"},
+        {:rotate_right, "f"}, nil,
+        {:rotate_left, "b"},
+        {:rotate_across, "l"},
+        {:middle_front_to_right, "f"},
+        {:middle_right_to_back, "l"},
+        {:middle_right_to_front, "r"},
+        {:middle_front_to_left, "b"}
+      ],
+      "RD" => [
+        {:flip_down_right, "f"},
+        {:flip_down, "r"},
+        {:flip_down_left, "b"},
+        {:flip_down_across, "l"},
+        {:flip_right, "f"},
+        {:flip, "r"},
+        {:flip_left, "b"},
+        {:flip_across, "l"},
+        {:middle_right_to_right, "f"},
+        {:middle_front_to_back, "l"},
+        {:middle_front_to_front, "r"},
+        {:middle_right_to_left, "b"}
+      ],
+      "DB" => [
+        {:rotate_down_across, "f"},
+        {:rotate_down_right, "r"},
+        {:rotate_down, "b"},
+        {:rotate_down_left, "l"},
+        {:rotate_across, "f"},
+        {:rotate_right, "r"}, nil,
+        {:rotate_left, "l"},
+        {:middle_front_to_back, "f"},
+        {:middle_right_to_left, "l"},
+        {:middle_right_to_right, "r"},
+        {:middle_front_to_front, "b"}
+      ],
+      "BD" => [
+        {:flip_down_across, "f"},
+        {:flip_down_right, "r"},
+        {:flip_down, "b"},
+        {:flip_down_left, "l"},
+        {:flip_across, "f"},
+        {:flip_right, "r"},
+        {:flip, "b"},
+        {:flip_left, "l"},
+        {:middle_right_to_back, "f"},
+        {:middle_front_to_left, "l"},
+        {:middle_front_to_right, "r"},
+        {:middle_right_to_front, "b"},
+      ],
+      "DL" => [
+        {:rotate_down_left, "f"},
+        {:rotate_down_across, "r"},
+        {:rotate_down_right, "b"},
+        {:rotate_down, "l"},
+        {:rotate_left, "f"},
+        {:rotate_across, "r"},
+        {:rotate_right, "b"}, nil,
+        {:middle_front_to_left, "f"},
+        {:middle_right_to_front, "l"},
+        {:middle_right_to_back, "r"},
+        {:middle_front_to_right, "b"}
+      ],
+      "LD" => [
+        {:flip_down_left, "f"},
+        {:flip_down_across, "r"},
+        {:flip_down_right, "b"},
+        {:flip_down, "l"},
+        {:flip_left, "f"},
+        {:flip_across, "r"},
+        {:flip_right, "b"},
+        {:flip, "l"},
+        {:middle_right_to_left, "f"},
+        {:middle_front_to_front, "l"},
+        {:middle_front_to_back, "r"},
+        {:middle_right_to_right, "b"}
       ]
-    end) |> Enum.concat |> Enum.into(%{})
-  end
-
-  def build_turn_map(type, face) do
-    [:top, :bottom, :middle] |> Enum.map(fn prefixix ->
-      apply(__MODULE__, :"#{prefixix}_layer_#{type}_fields", [face])
-    end) |> Enum.concat
-  end
-
-  def top_layer_rotation_fields(face) do
-    top_or_bottom_layer_function_names_for(face, fn {suffix, f} -> {:"rotate_down#{suffix}", f} end)
-  end
-
-  def middle_layer_rotation_fields(face) do
-    middle_layer_function_names_for(face, [:front, :right], fn {prefix, suffix, f} ->
-      {:"middle_#{prefix}_to_#{Enum.at(@side_names, face_index(suffix))}", f}
-    end)
-  end
-
-  def bottom_layer_rotation_fields(face) do
-    top_or_bottom_layer_function_names_for(face, fn
-      {"", _} -> nil
-      {suffix, face} -> {:"rotate#{suffix}", face}
-    end)
-  end
-
-  def top_layer_flip_fields(face) do
-    top_or_bottom_layer_function_names_for(face, fn {suffix, f} -> {:"flip_down#{suffix}", f} end)
-  end
-
-  def middle_layer_flip_fields(face) do
-    middle_layer_function_names_for(face, [:right, :front], fn {prefix, suffix, f} ->
-      {:"middle_#{prefix}_to_#{Enum.at(@side_names, face_index(suffix))}", f}
-    end)
-  end
-
-  def bottom_layer_flip_fields(face) do
-    top_or_bottom_layer_function_names_for(face, fn {suffix, f} -> {:"flip#{suffix}", f} end)
-  end
-
-  def top_or_bottom_layer_function_names_for(face, func) do
-    ["", "_left", "_across", "_right"] |> rotate(-face_index(face))
-    |> Enum.zip(@sides) |> Enum.map(&func.(&1))
-  end
-
-  def middle_layer_function_names_for(face, [prefix1, prefix2], func) do
-    [f, r, b, l] = face_names(face)
-    Enum.zip([
-      [prefix1, prefix2, prefix2, prefix1],
-      [f, r, l, b], ~w(f l r b)
-    ]) |> Enum.map(&func.(&1))
+    }
   end
 end
