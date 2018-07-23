@@ -15,7 +15,8 @@ defmodule Solver.PositionTopEdges do
   end
 
   def rotate_three({cube, _} = set) do
-    [good_face_index, _] = find_aligned_edge(cube)
+    [good_edge, _] = find_aligned_edge(cube)
+    good_face_index = Enum.find_index(cube, fn c -> c == good_edge end)
     front_index = rem(good_face_index + 2, 4)
     face = Enum.at(@sides, front_index)
     make_moves(set, "r u' r u r u r u' r' u' r2", face)
@@ -23,10 +24,8 @@ defmodule Solver.PositionTopEdges do
 
   def rotate_four({cube, _} = set) do
     cond do
-      is_cross?(cube) ->
-        make_moves(set, "l2 r2 d l2 r2 d2 l2 r2 d l2 r2 u2 d2")
-      is_z_shape?(cube) ->
-        make_moves(set, "l2 r2 d l2 r2 u l r' f2 l2 r2 b2 l r'")
+      is_cross?(cube) -> make_moves(set, "l2 r2 d l2 r2 d2 l2 r2 d l2 r2 u2 d2")
+      is_z_shape?(cube) -> make_moves(set, "l2 r2 d l2 r2 u l r' f2 l2 r2 b2 l r'")
       true -> make_moves(set, "u")
     end
   end
@@ -44,18 +43,20 @@ defmodule Solver.PositionTopEdges do
   end
 
   def count_aligned_edges?(cube) do
-    Enum.count([[0,12], [1,13], [2,14], [3,15]], fn [ei, ci] ->
-      e = Enum.at(cube, ei)
-      c = Enum.at(cube, ci)
+    corner_and_edge_pairs(cube) |> Enum.count(fn [e, c] ->
       String.at(e, 1) == String.at(c, 1)
     end)
   end
 
   def find_aligned_edge(cube) do
-    Enum.find([[0,12], [1,13], [2,14], [3,15]], fn [ei, ci] ->
-      e = Enum.at(cube, ei)
-      c = Enum.at(cube, ci)
+    corner_and_edge_pairs(cube) |> Enum.find(fn [e, c] ->
       String.at(e, 1) == String.at(c, 1)
+    end)
+  end
+
+  def corner_and_edge_pairs(cube) do
+    Enum.map([[0,12], [1,13], [2,14], [3,15]], fn indices ->
+      Enum.map(indices, &Enum.at(cube, &1))
     end)
   end
 end

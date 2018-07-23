@@ -3,17 +3,12 @@ defmodule Solver.TopEdges do
 
   def solve({cube, _} = set) do
     case oriented_edge_count(cube) do
-      0 -> flip_all_edges(set)
-      2 -> flip_two_edges(set)
       4 -> set
+      _ -> flip_edges(set) |> solve
     end
   end
 
-  def flip_all_edges(set) do
-    make_moves(set, "f u r u' r' f' r b u b' u' r'")
-  end
-
-  def flip_two_edges({cube, _} = set) do
+  def flip_edges({cube, _} = set) do
     case unrotated_edge_indices(cube) do
       [0, 1] -> rotate_adjacent_edges(set, "f")
       [0, 2] -> rotate_opposite_edges(set, "f")
@@ -21,6 +16,7 @@ defmodule Solver.TopEdges do
       [1, 2] -> rotate_adjacent_edges(set, "r")
       [1, 3] -> rotate_opposite_edges(set, "r")
       [2, 3] -> rotate_adjacent_edges(set, "b")
+      _ -> make_moves(set, "f u r u' r' f' r b u b' u' r'")
     end
   end
 
