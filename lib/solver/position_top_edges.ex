@@ -1,4 +1,4 @@
-defmodule Solver.PositionTopEdges do
+defmodule Cubex.Solver.PositionTopEdges do
   @sides ~w(f r b l)
 
   @solved ~w(UF UR UB UL DF DR DB DL FR FL BR BL UFR URB UBL ULF DRF DFL DLB DBR)

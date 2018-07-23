@@ -1,4 +1,4 @@
-defmodule Solver.PositionTopCorners do
+defmodule Cubex.Solver.PositionTopCorners do
   import Cube.Helpers
 
   def solve({[_,_,_,_,"DF","DR","DB","DL",

@@ -1,4 +1,4 @@
-defmodule Solver.LowerCorners do
+defmodule Cubex.Solver.LowerCorners do
   @solved ~w(UF UR UB UL DF DR DB DL FR FL BR BL UFR URB UBL ULF DRF DFL DLB DBR)
 
   @fr "DFR"

@@ -1,4 +1,4 @@
-defmodule Solver.Cross do
+defmodule Cubex.Solver.Cross do
   import Cube.Helpers
 
   def solve({[_, _, _, _, "DF", "DR", "DB", "DL"|_], _} = set), do: set

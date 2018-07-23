@@ -1,4 +1,4 @@
-defmodule Solver.TopEdges do
+defmodule Cubex.Solver.TopEdges do
   import Cube.Helpers
 
   def solve({cube, _} = set) do

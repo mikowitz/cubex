@@ -1,4 +1,4 @@
-defmodule Solver.LowerLayers do
+defmodule Cubex.Solver.LowerLayers do
   #    0  1  2  3  4  5  6  7  8  9  10 11 12  13  14  15  16  17  18  19
   # ~w(UF UR UB UL DF DR DB DL FR FL BR BL UFR URB UBL ULF DRF DFL DLB DBR)
 

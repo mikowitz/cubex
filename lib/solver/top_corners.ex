@@ -1,4 +1,4 @@
-defmodule Solver.TopCorners do
+defmodule Cubex.Solver.TopCorners do
   import Cube.Helpers
 
   def solve({cube, _} = set) do
