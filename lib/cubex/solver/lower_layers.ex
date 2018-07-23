@@ -4,7 +4,7 @@ defmodule Cubex.Solver.LowerLayers do
 
   @solved ~w(UF UR UB UL DF DR DB DL FR FL BR BL UFR URB UBL ULF DRF DFL DLB DBR)
 
-  import Cube.Helpers
+  import Cubex.Helpers
 
   def solve({[_,_,_,_,"DF","DR","DB","DL","FR","FL","BR","BL",_,_,_,_,"DRF","DFL","DLB","DBR"],_}=set), do: set
 

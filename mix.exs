@@ -1,9 +1,9 @@
-defmodule Cube.MixProject do
+defmodule Cubex.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :cube,
+      app: :cubex,
       version: "0.1.0",
       elixir: "~> 1.7-dev",
       start_permanent: Mix.env() == :prod,

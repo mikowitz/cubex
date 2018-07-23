@@ -1,6 +1,11 @@
-defmodule Cube.Helpers do
+defmodule Cubex.Helpers do
   @sides ~w(f r b l)
 
+  alias Cubex.Cube
+
+  def rotate(string, steps) when is_bitstring(string) do
+    string |> to_charlist |> rotate(steps) |> to_string
+  end
   def rotate([], _), do: []
   def rotate(list, 0), do: list
   def rotate(list, n) when n < 0 do
@@ -10,7 +15,7 @@ defmodule Cube.Helpers do
 
   def make_moves({cube, moves}, new_moves, face \\ "f") do
     new_moves = create_step(new_moves, face)
-    {Cube2.turn(cube, new_moves), moves ++ [new_moves]}
+    {Cube.turn(cube, new_moves), moves ++ [new_moves]}
   end
 
   def face_names(front), do: @sides |> rotate(face_index(front))

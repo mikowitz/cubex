@@ -3,7 +3,7 @@ defmodule Cubex.Solver.PositionTopEdges do
 
   @solved ~w(UF UR UB UL DF DR DB DL FR FL BR BL UFR URB UBL ULF DRF DFL DLB DBR)
 
-  import Cube.Helpers
+  import Cubex.Helpers
 
   def solve({@solved, _} = set), do: set
   def solve({cube, _} = set) do

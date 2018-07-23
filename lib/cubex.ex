@@ -1,0 +1,2 @@
+defmodule Cubex do
+end

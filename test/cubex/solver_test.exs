@@ -1,15 +1,14 @@
 defmodule Cube.SolverTest do
   use ExUnit.Case, async: true
 
-  alias Cubex.Solver
-  alias Cubex.Solver.Cross
+  alias Cubex.{Solver, Solver.Cross, Cube}
 
   test "sc" do
-    cube = Cube2.new()
+    cube = Cube.new()
 
     assert {cube, []} == Cross.solve({cube, []})
 
-    cube = cube |> Cube2.f2
+    cube = cube |> Cube.f2
 
     {_, moves} = Cross.solve({cube, []})
     assert ["f2"] == moves
@@ -24,7 +23,7 @@ defmodule Cube.SolverTest do
        "u", "r u r' u r u2 r'", "r b' r f2 r' b r f2 r2",
        "l2 r2 d l2 r2 u l r' f2 l2 r2 b2 l r'", "u", "u"]
     }
-    cube = Cube2.turn(Cube2.new, "f2 f' u d2 b l2 b l2 u l' l2 u2 b2 u2 l2")
+    cube = Cube.turn(Cube.new, "f2 f' u d2 b l2 b l2 u l' l2 u2 b2 u2 l2")
     assert Solver.solve(cube) == solution
   end
 end

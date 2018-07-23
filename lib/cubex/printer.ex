@@ -1,15 +1,15 @@
-defmodule Cube.Printer do
+defmodule Cubex.Printer do
   def print(cube) do
     [
-      # UF UR UB UL
+      # UF      UR        UB        UL
       <<t8,f2>>,<<t6,r2>>,<<t2,b2>>,<<t4,l2>>,
-      # DF DR DB DL
+      # DF      DR        DB        DL
       <<d2,f8>>,<<d6,r8>>,<<d8,b8>>,<<d4,l8>>,
-      # FR FL BR BL
+      # FR      FL        BR        BL
       <<f6,r4>>,<<f4,l6>>,<<b4,r6>>,<<b6,l4>>,
-      # UFR URB UBL ULF
+      # UFR         URB           UBL           ULF
       <<t9,f3,r1>>, <<t3,r3,b1>>, <<t1,b3,l1>>, <<t7,l3,f1>>,
-      # DRF DFL DLB DBR
+      # DRF         DFL           DLB           DBR
       <<d3,r7,f9>>, <<d1,f7,l9>>, <<d7,l7,b9>>, <<d9,b7,r9>>
     ] = cube
     [t5, f5, r5, l5, d5, b5] = 'UFRLDB'

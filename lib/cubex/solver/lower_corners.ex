@@ -6,7 +6,7 @@ defmodule Cubex.Solver.LowerCorners do
   @bl "BDL"
   @br "BDR"
 
-  import Cube.Helpers
+  import Cubex.Helpers
 
   def solve({cube, _} = set) do
     case solved?(cube) do

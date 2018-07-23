@@ -1,5 +1,5 @@
 defmodule Cubex.Solver.Cross do
-  import Cube.Helpers
+  import Cubex.Helpers
 
   def solve({[_, _, _, _, "DF", "DR", "DB", "DL"|_], _} = set), do: set
   def solve({cube, _} = set) do

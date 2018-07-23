@@ -1,5 +1,5 @@
 defmodule Cubex.Solver.TopCorners do
-  import Cube.Helpers
+  import Cubex.Helpers
 
   def solve({cube, _} = set) do
     case oriented_corner_count(cube) do
