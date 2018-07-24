@@ -15,7 +15,7 @@ defmodule Cubex.Helpers do
 
   def make_moves({cube, moves}, new_moves, face \\ "f") do
     new_moves = create_step(new_moves, face)
-    {Cube.turn(cube, new_moves), moves ++ [new_moves]}
+    {turn(cube, new_moves), moves ++ [new_moves]}
   end
 
   def face_names(front), do: @sides |> rotate(face_index(front))
@@ -37,5 +37,16 @@ defmodule Cubex.Helpers do
 
   def sort_cubie(cubie) do
     cubie |> String.split("") |> Enum.sort |> Enum.join
+  end
+
+  def turn(cube, steps) do
+    steps |> String.downcase |> String.split |> Enum.map(&get_turn_function/1)
+    |> Enum.reduce(cube, fn f, c ->
+      apply(Cube, f, [c])
+    end)
+  end
+
+  def get_turn_function(turn) do
+    String.replace(turn, "'", "p") |> String.to_atom
   end
 end

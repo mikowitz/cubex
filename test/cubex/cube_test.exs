@@ -2,7 +2,7 @@ defmodule Cubex.CubeTest do
   use ExUnit.Case
   doctest Cubex
 
-  alias Cubex.Cube
+  alias Cubex.{Cube, Helpers}
 
   test "starts with red in front and white on the bottom" do
     assert Cube.new() ==
@@ -46,10 +46,10 @@ defmodule Cubex.CubeTest do
   end
 
   test "longer sequence shorthand" do
-    assert Cube.new |> Cube.turn("f' u f' d' l' d' f' u' l2 d'") ==
+    assert Cube.new |> Helpers.turn("f' u f' d' l' d' f' u' l2 d'") ==
       ~w(RU LF UB DR DL BL UL FU BD RF BR FD LDF LBD FUL RFD UFR RDB UBL RBU)
 
-    assert Cube.new |> Cube.turn("F' U F' D' L' D' F' U' L2 D'") ==
+    assert Cube.new |> Helpers.turn("F' U F' D' L' D' F' U' L2 D'") ==
       ~w(RU LF UB DR DL BL UL FU BD RF BR FD LDF LBD FUL RFD UFR RDB UBL RBU)
   end
 end
