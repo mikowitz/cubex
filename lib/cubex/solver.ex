@@ -1,4 +1,7 @@
 defmodule Cubex.Solver do
+  alias Cubex.Solver.{Cross, LowerCorners, LowerLayers,
+    TopEdges, TopCorners, PositionTopCorners, PositionTopEdges}
+
   @steps [
     Cross,
     LowerCorners,
@@ -10,12 +13,6 @@ defmodule Cubex.Solver do
   ]
 
   def solve(cube) do
-    Enum.reduce(@steps, {cube, []}, fn step, set ->
-      step |> to_module |> apply(:solve, [set])
-    end)
-  end
-
-  def to_module(step) do
-    Module.safe_concat(__MODULE__, step)
+    Enum.reduce(@steps, {cube, []}, &apply(&1, :solve, [&2]))
   end
 end
